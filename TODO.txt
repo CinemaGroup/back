@@ -1,0 +1,14 @@
+PRODUCT
+description String - Полное Описание
+about      ProductAbout? - Для чего нужен
+principles ProductPrinciple[] - Принципы нашей работы
+gets       ProductGet[] - Что вы получите после заказа?
+
+VARIATION 
+composition      String - Что входит в состав пакета
+information      String - Тех. Информация
+shortDescription String @map("short_description") - Краткое Описание
+service ProductService? - Дополнительные Услуги
+
+Random number generate
+problem ka float-i het

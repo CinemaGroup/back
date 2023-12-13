@@ -1,37 +1,12 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model ProductType {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  name String @unique
-  slug String @unique
-
-  description String
-  color       String
-
-  @@map("product_type")
-}
-
-model Product {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  name String @unique
-  slug String @unique
-
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?  @map("user_id")
 }
 
 model User {
@@ -53,5 +28,291 @@ model User {
 
   favorites Product[]
 
+  reviews Review[]
+
   isAdmin Boolean @default(false) @map("is_admin")
+}
+
+model ProductCategory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  imagePath String @map("image_path")
+
+  products Product[]
+
+  calculator Calculator?
+
+  @@map("Product_category")
+}
+
+model CalculatorVariation {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name       String
+  step       Int
+  max        Int
+  piecePrice Int    @map("piece_price")
+
+  calculator   Calculator? @relation(fields: [calculatorId], references: [id])
+  calculatorId Int?        @map("calculator_id")
+
+  calculatorAdditional   CalculatorAdditional? @relation(fields: [calculatorAdditionalId], references: [id])
+  calculatorAdditionalId Int?                  @map("calculator_additional_id")
+
+  @@map("Calculator_variation")
+}
+
+model CalculatorTariff {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name  String
+  price Int
+
+  calculator   Calculator? @relation(fields: [calculatorId], references: [id])
+  calculatorId Int?        @map("calculator_id")
+
+  @@map("Calculator_tariff")
+}
+
+model CalculatorAdditional {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  enableLink Boolean @default(false) @map("enable_link")
+  link       String  @default("Ссылка на открытый аккаунт")
+
+  variations CalculatorVariation[]
+
+  isActive Boolean @default(false) @map("is_active")
+
+  @@map("Calculator_additional")
+}
+
+model Calculator {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  variations CalculatorVariation[]
+  tariffs    CalculatorTariff[]
+
+  enableLink Boolean @default(false) @map("enable_link")
+  link       String  @default("Ссылка на открытый аккаунт")
+
+  enableSale  Boolean @default(false) @map("enable_sale")
+  salePercent Int?    @map("sale_percent")
+  maxPercent  Int?    @map("max_percent")
+  perPrice    Int?    @map("per_price")
+
+  productCategory   ProductCategory? @relation(fields: [productCategoryId], references: [id])
+  productCategoryId Int?             @unique @map("product_category_id")
+}
+
+model ProductType {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  description String
+  color       String
+
+  products Product[]
+
+  @@map("Product_type")
+}
+
+model ProductGroup {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  description String
+
+  products Product[]
+
+  @@map("Product_group")
+}
+
+model ProductServiceItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title String
+
+  price Int
+
+  productService   ProductService? @relation(fields: [productServiceId], references: [id], onDelete: Cascade)
+  productServiceId Int?            @map("product_service_id")
+
+  @@map("Product_service_item")
+}
+
+model ProductService {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title String
+
+  items ProductServiceItem[]
+
+  productVariation   ProductVariation @relation(fields: [productVariationId], references: [id], onDelete: Cascade)
+  productVariationId Int              @unique @map("product_variation_id")
+
+  @@map("Product_service")
+}
+
+model ProductAboutItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title       String
+  description String
+
+  productAbout   ProductAbout @relation(fields: [productAboutId], references: [id], onDelete: Cascade)
+  productAboutId Int          @map("product_about_id")
+
+  @@map("Product_about_item")
+}
+
+model ProductAbout {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title String
+
+  items ProductAboutItem[]
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int     @unique @map("product_id")
+
+  @@map("Product_about")
+}
+
+model ProductPrinciple {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title String
+
+  description String
+
+  imagePath String @map("image_path")
+
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?     @map("product_id")
+
+  @@map("Product_principle")
+}
+
+model ProductGet {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title String
+
+  description String
+
+  imagePath String @map("image_path")
+
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?     @map("product_id")
+
+  @@map("Product_get")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rating Int
+
+  productVariation   ProductVariation @relation(fields: [productVariationId], references: [id])
+  productVariationId Int              @map("product_variation_id")
+  user               User?            @relation(fields: [userId], references: [id])
+  userId             Int?             @map("user_id")
+}
+
+model ProductVariation {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  class String @unique
+  sku   String
+
+  image       String
+  salePrice   Int?   @map("sale_price")
+  price       Int
+  boughtTimes Int    @map("bought_times")
+
+  composition      String
+  information      String
+  shortDescription String @map("short_description")
+
+  service ProductService?
+
+  reviews Review[]
+
+  rating Float
+
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?     @map("product_id")
+
+  @@map("Product_variation")
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  description String
+
+  variations ProductVariation[]
+
+  videoPoster String? @map("video_poster")
+  videoPath   String  @map("video_path")
+
+  relatedIds Int[] @map("related_ids")
+
+  about      ProductAbout[]
+  principles ProductPrinciple[]
+  gets       ProductGet[]
+
+  views Int @default(0)
+
+  user              User?            @relation(fields: [userId], references: [id])
+  userId            Int?             @map("user_id")
+  productType       ProductType?     @relation(fields: [productTypeId], references: [id])
+  productTypeId     Int?             @map("product_type_id")
+  productGroup      ProductGroup?    @relation(fields: [productGroupId], references: [id])
+  productGroupId    Int?             @map("product_group_id")
+  productCategory   ProductCategory? @relation(fields: [productCategoryId], references: [id])
+  productCategoryId Int?             @map("product_category_id")
 }

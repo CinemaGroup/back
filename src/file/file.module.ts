@@ -5,13 +5,13 @@ import { FileController } from './file.controller'
 import { FileService } from './file.service'
 
 @Module({
-  controllers: [FileController],
   imports: [
     ServeStaticModule.forRoot({
       rootPath: `${path}/uploads`,
       serveRoot: '/uploads',
     }),
   ],
+  controllers: [FileController],
   providers: [FileService],
 })
 export class FileModule {}

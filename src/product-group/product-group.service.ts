@@ -4,12 +4,15 @@ import { PaginationService } from 'src/pagination/pagination.service'
 import { PrismaService } from 'src/prisma.service'
 import { EnumSort, QueryDto } from 'src/query-dto/query.dto'
 import { generateSlug } from 'src/utils/generate-slug'
-import { ProductTypeDto } from './dto/product-type.dto'
-import { productTypeDtoObject } from './object/product-type-dto.object'
-import { productTypeObject } from './object/product-type.object'
+import { ProductGroupDto } from './dto/product-group.dto'
+import {
+  productGroupFullestObject,
+  productGroupObject,
+} from './object/product-group.object'
+import { productGroupDtoObject } from './object/product-group-dto.object'
 
 @Injectable()
-export class ProductTypeService {
+export class ProductGroupService {
   constructor(
     private prisma: PrismaService,
     private paginationService: PaginationService
@@ -20,38 +23,25 @@ export class ProductTypeService {
 
     const filters = this.getSearchTermFilter(dto.searchTerm)
 
-    const types = await this.prisma.productType.findMany({
+    const groups = await this.prisma.productGroup.findMany({
       where: filters,
       orderBy: this.getSortOption(dto.sort),
       skip,
       take: perPage,
-      select: productTypeObject,
+      select: productGroupObject,
     })
 
     return {
-      types,
-      length: await this.prisma.productType.count({
+      groups,
+      length: await this.prisma.productGroup.count({
         where: filters,
       }),
     }
   }
 
-  async bySlug(slug: string) {
-    const type = await this.prisma.productType.findUnique({
-      where: {
-        slug,
-      },
-      select: productTypeObject,
-    })
-
-    if (!type) throw new NotFoundException('Product type not found')
-
-    return type
-  }
-
   private getSortOption(
     sort: EnumSort
-  ): Prisma.ProductTypeOrderByWithRelationInput[] {
+  ): Prisma.ProductGroupOrderByWithRelationInput[] {
     switch (sort) {
       case EnumSort.NEWEST:
         return [{ createdAt: 'desc' }]
@@ -64,7 +54,7 @@ export class ProductTypeService {
 
   private getSearchTermFilter(
     searchTerm: string
-  ): Prisma.ProductTypeWhereInput {
+  ): Prisma.ProductGroupWhereInput {
     return {
       name: {
         contains: searchTerm,
@@ -76,33 +66,32 @@ export class ProductTypeService {
   // Admin Place
 
   async byId(id: number) {
-    const type = await this.prisma.productType.findUnique({
+    const group = await this.prisma.productGroup.findUnique({
       where: {
         id,
       },
-      select: productTypeDtoObject,
+      select: productGroupDtoObject,
     })
 
-    if (!type) throw new NotFoundException('Product Type not found')
+    if (!group) throw new NotFoundException('Product Group not found')
 
-    return type
+    return group
   }
 
   async create() {
-    const type = await this.prisma.productType.create({
+    const group = await this.prisma.productGroup.create({
       data: {
         name: '',
         slug: '',
         description: '',
-        color: '',
       },
     })
 
-    return type.id
+    return group.id
   }
 
-  async update(id: number, dto: ProductTypeDto) {
-    return this.prisma.productType.update({
+  async update(id: number, dto: ProductGroupDto) {
+    return this.prisma.productGroup.update({
       where: {
         id,
       },
@@ -110,13 +99,12 @@ export class ProductTypeService {
         name: dto.name,
         slug: generateSlug(dto.name),
         description: dto.description,
-        color: dto.color,
       },
     })
   }
 
   async delete(id: number) {
-    return this.prisma.productType.delete({
+    return this.prisma.productGroup.delete({
       where: {
         id,
       },

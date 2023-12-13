@@ -1,15 +1,15 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 import { PaginationDto } from 'src/pagination/dto/pagination.dto'
 
-export enum EnumProductTypeSort {
+export enum EnumSort {
   NEWEST = 'newest',
   OLDEST = 'oldest',
 }
 
-export class GetAllProductTypeDto extends PaginationDto {
+export class QueryDto extends PaginationDto {
   @IsOptional()
-  @IsEnum(EnumProductTypeSort)
-  sort?: EnumProductTypeSort
+  @IsEnum(EnumSort)
+  sort?: EnumSort
 
   @IsOptional()
   @IsString()

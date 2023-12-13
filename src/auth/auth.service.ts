@@ -9,7 +9,7 @@ import { User } from '@prisma/client'
 import { hash, verify } from 'argon2'
 import { PrismaService } from 'src/prisma.service'
 import { UserService } from 'src/user/user.service'
-import { AuthDto } from './dto/auth.dto'
+import { LoginDto, RegisterDto } from './dto/auth.dto'
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     private userService: UserService
   ) {}
 
-  async login(dto: AuthDto) {
+  async login(dto: LoginDto) {
     const user = await this.validateUser(dto)
     const tokens = await this.issueTokens(user.id)
 
@@ -29,7 +29,7 @@ export class AuthService {
     }
   }
 
-  async register(dto: AuthDto) {
+  async register(dto: RegisterDto) {
     const existUser = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -92,7 +92,7 @@ export class AuthService {
     }
   }
 
-  private async validateUser(dto: AuthDto) {
+  private async validateUser(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
