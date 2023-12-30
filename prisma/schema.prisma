@@ -30,6 +30,8 @@ model User {
 
   reviews Review[]
 
+  rememberToken String? @map("remember_token")
+
   isAdmin Boolean @default(false) @map("is_admin")
 }
 

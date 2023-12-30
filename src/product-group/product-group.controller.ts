@@ -11,10 +11,10 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import { Auth } from 'src/auth/decorators/auth.decorator'
 import { QueryDto } from 'src/query-dto/query.dto'
 import { ProductGroupDto } from './dto/product-group.dto'
 import { ProductGroupService } from './product-group.service'
+import { Auth } from 'src/auth/jwt/decorators/auth.decorator'
 
 @Controller('product-groups')
 export class ProductGroupController {

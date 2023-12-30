@@ -10,6 +10,7 @@ import { hash, verify } from 'argon2'
 import { PrismaService } from 'src/prisma.service'
 import { UserService } from 'src/user/user.service'
 import { LoginDto, RegisterDto } from './dto/auth.dto'
+import { RefreshTokenDto } from './dto/refresh-token.dto'
 
 @Injectable()
 export class AuthService {
@@ -25,14 +26,23 @@ export class AuthService {
 
     return {
       user: this.returnUserFields(user),
+      provider: 'media-building',
+      isRemember: dto.isRemember,
       ...tokens,
     }
   }
 
   async register(dto: RegisterDto) {
-    const existUser = await this.prisma.user.findUnique({
+    const existUser = await this.prisma.user.findFirst({
       where: {
-        email: dto.email,
+        OR: [
+          {
+            login: dto.login,
+          },
+          {
+            email: dto.email,
+          },
+        ],
       },
     })
 
@@ -50,11 +60,13 @@ export class AuthService {
 
     return {
       user: this.returnUserFields(user),
+      provider: 'media-building',
+      isRemember: dto.isRemember,
       ...tokens,
     }
   }
 
-  async getNewTokens(refreshToken: string) {
+  async getNewTokens({ refreshToken, isRemember }: RefreshTokenDto) {
     const result = await this.jwt.verifyAsync(refreshToken)
     if (!result) throw new UnauthorizedException('Invalid refresh token')
 
@@ -66,6 +78,8 @@ export class AuthService {
 
     return {
       user: this.returnUserFields(user),
+      provider: 'media-building',
+      isRemember: isRemember,
       ...tokens,
     }
   }
@@ -93,9 +107,16 @@ export class AuthService {
   }
 
   private async validateUser(dto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: {
-        email: dto.email,
+        OR: [
+          {
+            login: dto.emailOrLogin,
+          },
+          {
+            email: dto.emailOrLogin,
+          },
+        ],
       },
     })
 

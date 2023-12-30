@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { AuthModule } from './auth/auth.module'
 import { CalculatorModule } from './calculator/calculator.module'
 import { FileModule } from './file/file.module'
 import { PaginationModule } from './pagination/pagination.module'
@@ -12,6 +11,8 @@ import { ProductGroupModule } from './product-group/product-group.module'
 import { ProductTypeModule } from './product-type/product-type.module'
 import { ProductModule } from './product/product.module'
 import { UserModule } from './user/user.module'
+import { GoogleModule } from './auth/google/google.module'
+import { AuthModule } from './auth/jwt/auth.module'
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module'
     CalculatorModule,
     ProductGroupModule,
     ProductCategoryModule,
+    GoogleModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
