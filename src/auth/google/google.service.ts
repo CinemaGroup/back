@@ -92,7 +92,7 @@ export class GoogleService {
           code,
           client_id: this.configService.get('GOOGLE_CLIENT_ID'),
           client_secret: this.configService.get('GOOGLE_SECRET'),
-          redirect_uri: 'http://localhost:3000/google-auth',
+          redirect_uri: 'http://82.97.243.54:3000/google-auth',
           grant_type: 'authorization_code',
         })
         .pipe(map((res) => res.data))
