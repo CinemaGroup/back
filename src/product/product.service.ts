@@ -80,16 +80,20 @@ export class ProductService {
     return product
   }
 
-  async getSimilar(id: number) {
-    const currentProduct = await this.byId(id)
+  async getSimilar(slug: string) {
+    const currentProduct = await this.prisma.product.findUnique({
+      where: {
+        slug,
+      },
+    })
 
     if (!currentProduct)
       throw new NotFoundException('Current product not found')
 
-    const products = await this.prisma.product.findMany({
+    const similarProducts = await this.prisma.product.findMany({
       where: {
         NOT: {
-          id: currentProduct.id,
+          slug,
         },
         productCategoryId: currentProduct.productCategoryId,
       },
@@ -99,7 +103,7 @@ export class ProductService {
       select: productObject,
     })
 
-    return products
+    return similarProducts
   }
 
   async updateViews({ slug }: ProductViewsDto) {

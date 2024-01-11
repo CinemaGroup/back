@@ -7,6 +7,8 @@ export const productCategoryObject: Prisma.ProductCategorySelect = {
   name: true,
   slug: true,
   imagePath: true,
+  backgroundImage: true,
+  phoneImage: true,
   calculator: { select: calculatorObject },
   createdAt: true,
 }

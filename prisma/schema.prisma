@@ -45,6 +45,9 @@ model ProductCategory {
 
   imagePath String @map("image_path")
 
+  backgroundImage String @map("background_image")
+  phoneImage      String @map("phone_image")
+
   products Product[]
 
   calculator Calculator?
@@ -299,7 +302,7 @@ model Product {
   variations ProductVariation[]
 
   videoPoster String? @map("video_poster")
-  videoPath   String  @map("video_path")
+  videoPath   String? @map("video_path")
 
   relatedIds Int[] @map("related_ids")
 

@@ -119,6 +119,8 @@ export class ProductCategoryService {
         name: '',
         slug: '',
         imagePath: '',
+        backgroundImage: '',
+        phoneImage: '',
       },
     })
 
@@ -134,6 +136,8 @@ export class ProductCategoryService {
         name: dto.name,
         slug: generateSlug(dto.name),
         imagePath: dto.imagePath,
+        backgroundImage: dto.backgroundImage,
+        phoneImage: dto.phoneImage,
       },
     })
   }

@@ -7,12 +7,12 @@ import {
   Param,
   Post,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
+import { FilesInterceptor } from '@nestjs/platform-express'
 import { Auth } from 'src/auth/jwt/decorators/auth.decorator'
 import { DirectoryDto } from './dto/directory.dto'
 import { QueryFilesDto } from './dto/query-file.dto'
@@ -36,12 +36,12 @@ export class FileController {
   @Post()
   @HttpCode(200)
   @Auth('admin')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadFiles(
+    @UploadedFiles() files: Express.Multer.File[],
     @Query('folder') folder?: string
   ) {
-    return this.fileService.saveFiles([file], folder)
+    return this.fileService.saveFiles(files, folder)
   }
 
   @UsePipes(new ValidationPipe())

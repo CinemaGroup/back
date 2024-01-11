@@ -4,4 +4,8 @@ export class QueryFilesDto {
 	@IsOptional()
 	@IsString()
 	folder?: string
+
+	@IsOptional()
+	@IsString()
+	searchTerm?: string
 }

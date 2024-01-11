@@ -2,21 +2,36 @@ import { Injectable } from '@nestjs/common'
 import { path } from 'app-root-path'
 import { ensureDir, readdirSync, remove, writeFile } from 'fs-extra'
 import { join } from 'path'
+import { PrismaService } from 'src/prisma.service'
+import { ProductService } from 'src/product/product.service'
 import { DirectoryDto } from './dto/directory.dto'
 import { QueryFilesDto } from './dto/query-file.dto'
 import { FileResponse } from './interface/file.interface'
 
 @Injectable()
 export class FileService {
+  constructor(
+    private productService: ProductService,
+    private prisma: PrismaService
+  ) {}
+
   async getAll(dto: QueryFilesDto = {}) {
+    let allFiles = []
+
     if (dto.folder) {
       const folderPath = join(path, 'uploads', dto.folder)
-      return readdirSync(folderPath).map((file) => ({
-        name: file,
-        url: join('/uploads', dto.folder, file).replace(/\\/g, '/'),
-      }))
+      const filesInFolder = readdirSync(folderPath)
+
+      // Добавьте фильтрацию по searchTerm
+      allFiles = filesInFolder
+        .filter((file) =>
+          file.toLowerCase().includes((dto.searchTerm || '').toLowerCase())
+        )
+        .map((file) => ({
+          name: file,
+          url: join('/uploads', dto.folder, file).replace(/\\/g, '/'),
+        }))
     } else {
-      const allFiles = []
       const baseFolderPath = join(path, 'uploads')
       const allFolders = readdirSync(baseFolderPath, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory())
@@ -25,16 +40,22 @@ export class FileService {
       allFolders.forEach((folder) => {
         const folderPath = join(baseFolderPath, folder)
         const filesInFolder = readdirSync(folderPath)
+
+        // Добавьте фильтрацию по searchTerm
+        const filteredFiles = filesInFolder.filter((file) =>
+          file.toLowerCase().includes((dto.searchTerm || '').toLowerCase())
+        )
+
         allFiles.push(
-          ...filesInFolder.map((file) => ({
+          ...filteredFiles.map((file) => ({
             name: file,
             url: join('/uploads', folder, file).replace(/\\/g, '/'),
           }))
         )
       })
-
-      return allFiles
     }
+
+    return allFiles
   }
 
   async getDirectories() {

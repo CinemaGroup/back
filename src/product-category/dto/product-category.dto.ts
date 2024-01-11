@@ -6,4 +6,10 @@ export class ProductCategoryDto {
 
   @IsString()
   imagePath: string
+
+  @IsString()
+  backgroundImage: string
+
+  @IsString()
+  phoneImage: string
 }

@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { path } from 'app-root-path'
+import { PaginationService } from 'src/pagination/pagination.service'
+import { PrismaService } from 'src/prisma.service'
+import { ProductService } from 'src/product/product.service'
 import { FileController } from './file.controller'
 import { FileService } from './file.service'
 
@@ -12,6 +15,6 @@ import { FileService } from './file.service'
     }),
   ],
   controllers: [FileController],
-  providers: [FileService],
+  providers: [FileService, PrismaService, ProductService, PaginationService],
 })
 export class FileModule {}

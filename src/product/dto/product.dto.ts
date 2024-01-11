@@ -117,8 +117,9 @@ export class ProductDto {
   @IsString()
   videoPoster?: string
 
+  @IsOptional()
   @IsString()
-  videoPath: string
+  videoPath?: string
 
   @ArrayNotEmpty()
   @IsArray()
